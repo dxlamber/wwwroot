@@ -17,6 +17,28 @@ var GlobalFun = {};
 GlobalFun.add = function(){
  return [].reduce.call(arguments, function(pv, cv){return pv+cv;}, 0);
 };
+GlobalFun.mult = function(){
+ debugger;
+ return [].reduce.call(arguments, function(pv, cv){return pv*cv;}, 1);
+};
+GlobalFun.minus = function(){
+ if(arguments.length != 2)
+ {
+	debugger;
+	return;
+ }
+	
+ return arguments[0] - arguments[1];
+};
+GlobalFun.div = function(){
+ if(arguments.length != 2)
+ {
+	debugger;
+	return;
+ }
+	
+ return arguments[0] / arguments[1];
+};
 GlobalFun.note = function(obj){
  return obj.toNote();
 };
@@ -55,6 +77,15 @@ Exp.prototype.initByNotation = function(strNt)
  {
   case '+':
    this.operator = GlobalFun.add
+   break;
+  case '-':
+   this.operator = GlobalFun.minus
+   break;
+  case '*':
+   this.operator = GlobalFun.mult
+   break;
+  case '/':
+   this.operator = GlobalFun.div
    break;
   case 'Note':
    this.operator = GlobalFun.note;
