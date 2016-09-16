@@ -21,7 +21,6 @@ GlobalFun.note = function(obj){
  return obj.toNote();
 };
 function Atom(strNotation){
- debugger;
  this.type = "";
  this.value = "";
  this.initByNotation(strNotation);
@@ -31,7 +30,6 @@ Atom.prototype.initByNotation = function(strNt)
  if(strNt[0] === '"')
  {
   this.type = "string";
-  debugger;
   this.value = strNt.subStr(1, strNt.length - 2);
  }
  else if(/[\d]+/.test(strNt))
@@ -45,7 +43,6 @@ Atom.prototype.getVal = function(){
  return this.value;
 };
 function Exp(strNotation){
- debugger;
  this.operator = null;
  this.operandObjArr = [];
  this.initByNotation(strNotation);
@@ -62,14 +59,12 @@ Exp.prototype.initByNotation = function(strNt)
   case 'Note':
    this.operator = GlobalFun.note;
  }
-
- debugger;
+ 
  var opr = strNt.split(' ');
  opr.splice(0, 1);
  var lastOne = opr[opr.length-1];
  opr[opr.length-1] = lastOne.substr(0, lastOne.length-1);//remove the last ')'
  opr.forEach(function(it){
-  debugger;
   if(it[0] == '(')
    thisRef.operandObjArr.push(new Exp(it));
   else
@@ -89,9 +84,7 @@ Exp.prototype.getVal = function(){
 function calcSimpleExp()
 {
 	var str = $("#simpleExp").val();
-	debugger;
 	var inputL = str.split('\n').pop();
-	debugger;
 	var v = new Exp(inputL);
 	$("#simpleExp").val(str + "\n" + v.getVal());
 };
