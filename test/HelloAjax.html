@@ -1,0 +1,19 @@
+<body>
+<p>Hello Html</p>
+<div id="test"/>
+</body>
+<script>
+function fn(dataTxt)
+{
+	document.getElementById("test").innerHTML = eval('('+dataTxt+')').msg;
+}
+
+var a = new XMLHttpRequest();
+a.onreadystatechange = function(){
+	if(a.readyState == 4 && a.status == 200)
+		fn(a.responseText);
+}
+a.open("GET", "/data.json");
+a.send(null);
+	
+</script>

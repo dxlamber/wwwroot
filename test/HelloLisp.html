@@ -1,0 +1,141 @@
+<body>
+<div class="inputArea">
+	<p>Please input an Lisp expression: </p>
+	<textarea id="lispstring">(quote (+ 3 2))</textarea>
+</div>
+</body>
+<script>
+function createObyP(protoObj)
+{
+    var tmpO = null;
+    if(Object.create)
+    {
+        tmpO = Object.create(protoObj);//Create an object from an prototype
+    }
+    else
+    {
+        tmpf = function(){};
+        tmpf.prototype = protoObj;
+        tmpO = new tmpf();
+    }
+    return tmpO;
+};
+function inheritS(childClass, parentClass)
+{
+    childClass.prototype = createObyP(parentClass.prototype);
+    childClass.prototype.constructor = childClass;
+};
+
+var GId = (function(){
+	var gPrivateId = 1;
+	var a = function(){return gPrivateId ++;};
+	return {
+	 getId: a
+	};
+})();
+</script>
+<script>
+
+var gAllObj = {};
+
+var DObject = function(){
+	//use ID to reference the object
+	this.Id = GId.getId();
+	gAllObj[this.Id] = this;
+};
+DObject.prototype.run = function(){};
+Atom.prototype.getObject = function(){return this;};
+DObject.prototype.toNotation = function(){};
+DObject.prototype.destroy = function(){
+	var tmpId = this.id;
+	delete this.id;
+	delete gAllObj[tmpId];
+};
+
+/*Atom type*/
+var Atom = function(type, value, strNotation){
+	DObject.call(this);
+	this.type= type;
+	this.value= value;
+	this.note = strNotaion;
+};
+inheritS(Atom, DObject);
+Atom.prototype.run = function(){
+	return this.value;
+};
+Atom.prototype.getObject = function(){
+	return this;
+};
+Atom.prototype.getNotation = function(){
+	var retStr = "";
+	switch(this.type)
+	{
+		case "int": 
+			retStr = this.value.toString();
+		case "bool":
+			retStr = this.value ? "T" : "F";
+		case "string":
+		default:
+			retStr = this.value;
+	}
+	return retStr;
+};
+Atom.prototype.destroy = function(){
+	delete this.value; delete this.type; delete this.note;
+	Dobject.prototype.destroy.apply(this);
+};
+
+/*List type*/
+var List = function(strNotation){
+	DObject.call(this);
+	
+	this.empty = true;
+	this.noteArr = this.getNoteArr(strNotaion) || [];
+	if(this.noteArr.length > 0)
+		this.empty = false;
+	
+	this.value = null;
+};
+inheritS(List, DObject);
+List.prototype.run = function(){
+	/*Use the first element as function, other element as parameters.*/
+	if(this.empty)
+		return new Atom("bool", "F");
+		
+	return this.arrCar().apply(this, this.arrCdr());
+};
+Atom.prototype.getObject = function(){
+	return this.value;
+};
+Atom.prototype.getNotation = function(){
+	var retStr = "";
+	switch(this.type)
+	{
+		case "int": 
+			retStr = this.value.toString();
+		case "bool":
+			retStr = this.value ? "T" : "F";
+		case "string":
+		default:
+			retStr = this.value;
+	}
+	return retStr;
+};
+Atom.prototype.destroy = function(){
+	delete this.value; delete this.type; delete this.note;
+	Dobject.prototype.destroy.apply(this);
+};
+List.prototype.arrCar = function(){return this.eleArr[0];};
+List.prototype.arrCdr = function(){
+	var retArr = [];
+	for(var i = 1; i < this.eleArr.length; i ++)
+		retArr.push(this.eleArr[i]);
+	return retArr;
+};
+
+</script>
+<script>
+function lex();
+function comp();
+function run();
+</script>

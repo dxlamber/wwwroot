@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>An Lisp interpretation by Javascript</title>
+	<meta charset="UTF-8">
+	<link href="/lib/bootstrap/css/bootstrap.css" rel="stylesheet" media="screen">
+</head>
+<body>
+ <p>Test Lisp Expression:</p>
+ <div><textarea id="simpleExp" style="height:100px; width:300px;">(+ 12 23)</textarea></div>
+ <div><button onclick="calcSimpleExp();">计算</button></div>
+</body>
+<script src="/lib/jquery/jquery.js"></script>
+<script src="/lib/bootstrap/js/bootstrap.js"></script>
+<script type="text/javascript">
+var GlobalFun = {};
+GlobalFun.add = function(){
+ return [].reduce.call(arguments, function(pv, cv){return pv+cv;}, 0);
+};
+GlobalFun.note = function(obj){
+ return obj.toNote();
+};
+function Atom(strNotation){
+ debugger;
+ this.type = "";
+ this.value = "";
+ this.initByNotation(strNotation);
+};
+Atom.prototype.initByNotation = function(strNt)
+{
+ if(strNt[0] === '"')
+ {
+  this.type = "string";
+  debugger;
+  this.value = strNt.subStr(1, strNt.length - 2);
+ }
+ else if(/[\d]+/.test(strNt))
+ {
+  this.type = "number";
+  this.value = parseFloat(strNt);
+ }
+  
+};
+Atom.prototype.getVal = function(){
+ return this.value;
+};
+function Exp(strNotation){
+ debugger;
+ this.operator = null;
+ this.operandObjArr = [];
+ this.initByNotation(strNotation);
+};
+Exp.prototype.initByNotation = function(strNt)
+{
+ var thisRef = this;
+ var optName = strNt.split(' ')[0].substr(1);
+ switch(optName)
+ {
+  case '+':
+   this.operator = GlobalFun.add
+   break;
+  case 'Note':
+   this.operator = GlobalFun.note;
+ }
+
+ debugger;
+ var opr = strNt.split(' ');
+ opr.splice(0, 1);
+ var lastOne = opr[opr.length-1];
+ opr[opr.length-1] = lastOne.substr(0, lastOne.length-1);//remove the last ')'
+ opr.forEach(function(it){
+  debugger;
+  if(it[0] == '(')
+   thisRef.operandObjArr.push(new Exp(it));
+  else
+   thisRef.operandObjArr.push(new Atom(it));
+ });
+};
+Exp.prototype.getVal = function(){
+ var paras = [];
+ this.operandObjArr.forEach(function(it){
+  paras.push(it.getVal());
+ });
+ return this.operator.apply(this, paras);
+};
+</script>
+
+<script type="text/javascript">
+function calcSimpleExp()
+{
+	var str = $("#simpleExp").val();
+	debugger;
+	var inputL = str.split('\n').pop();
+	debugger;
+	var v = new Exp(inputL);
+	$("#simpleExp").val(str + "\n" + v.getVal());
+};
+</script>
+</html>
