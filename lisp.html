@@ -30,7 +30,7 @@ Atom.prototype.initByNotation = function(strNt)
  if(strNt[0] === '"')
  {
   this.type = "string";
-  this.value = strNt.subStr(1, strNt.length - 2);
+  this.value = strNt.substring(1, strNt.length-1);
  }
  else if(/[\d]+/.test(strNt))
  {
@@ -85,7 +85,7 @@ function calcSimpleExp()
 {
 	var str = $("#simpleExp").val();
 	var inputL = str.split('\n').pop();
-	var v = new Exp(inputL);
+	var v = (inputL[0] == '(' ? new Exp(inputL) : new Atom(inputL));
 	$("#simpleExp").val(str + "\n" + v.getVal());
 };
 </script>
