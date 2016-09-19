@@ -42,6 +42,47 @@ GlobalFun.div = function(){
 GlobalFun.note = function(obj){
  return obj.toNote();
 };
+
+/*
+	var a = new AutoFsm({
+		"null": {"d":"start"},
+		"start":{"e":"1"},
+		"1":{"f":"2"},
+		"2":{"u":"3"},
+		"3":{"n":"succ"}
+	});
+	a.test("test defun keyword");
+*/
+
+AutoFsm = function(statJump){
+	this.statJump = statJump || {"null":false};
+};
+AutoFsm.nullStat = "null";
+AutoFsm.startStat = "start";
+AutoFsm.succStat = "succ";
+AutoFsm.prototype.test = function(strLine){
+	var iStartPos = -1;
+	var iEndPos = -1;
+	
+	var stat = AutoFsm.nullStat;
+	for(var i = 0; i < strLine.length; i++)
+	{
+		var getCh = strLine[i];
+		stat = (this.statJump[stat][getCh] ? this.statJump[stat][getCh] : AutoFsm.nullStat);
+		if(stat === AutoFsm.startStat)
+			iStartPos = i;
+		if(stat === AutoFsm.succStat)
+		{
+			iEndPos = i;
+			break;
+		}
+	}
+	
+	console.log((iEndPos >= 0 ? 'Matched in ' : 'Unmatched in ') + '"' +strLine  + '"' + ". String position is at (" + iStartPos + ", " + iEndPos + "), use substring() value: " + strLine.substring(iStartPos,iEndPos+1));
+	return (iEndPos >= 0 ? true : false);
+};
+
+
 function Atom(strNotation){
  this.type = "";
  this.value = "";
@@ -118,6 +159,16 @@ function calcSimpleExp()
 	var inputL = str.split('\n').pop();
 	var v = (inputL[0] == '(' ? new Exp(inputL) : new Atom(inputL));
 	$("#simpleExp").val(str + "\n" + v.getVal());
+	
+	debugger;
+	var a = new AutoFsm({
+		"null": {"d":"start"},
+		"start":{"e":"1"},
+		"1":{"f":"2"},
+		"2":{"u":"3"},
+		"3":{"n":"succ"}
+	});
+	var bmatched = a.test("test defun keyword");
 };
 </script>
 </html>
