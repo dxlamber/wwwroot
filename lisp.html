@@ -70,13 +70,22 @@ AutoFsm.prototype.getEvent = function(curChar){
 AutoFsm.prototype.test = function(strLine, bWholeMatch){
 	var iStartPos = -1;
 	var iEndPos = -1;
+	var oriStrLine = strLine;
 	strLine = strLine + AutoFsm.separatorVal;
 	
 	var stat = AutoFsm.nullStat;
 	for(var i = 0; i < strLine.length; i++)
 	{
 		var getCh = this.getEvent(strLine[i]);
-		stat = (this.statJump[stat][getCh] ? this.statJump[stat][getCh] : AutoFsm.nullStat);
+		
+		//stat = (this.statJump[stat][getCh] ? this.statJump[stat][getCh] : AutoFsm.nullStat);
+		if(typeof(this.statJump[stat]) == "function")//use function mapping
+			stat = this.statJump[stat](getCh);
+		else if(this.statJump[stat][getCh])//use object mapping
+			stat = this.statJump[stat][getCh];
+		else
+			stat = AutoFsm.nullStat;
+			
 		if(stat === AutoFsm.startStat)
 		{
 			if(bWholeMatch)
@@ -100,15 +109,65 @@ AutoFsm.prototype.test = function(strLine, bWholeMatch){
 		}
 	}
 	
-	console.log((iEndPos >= 0 ? 'Matched in ' : 'Unmatched in ') + '"' +strLine  + '"' + ". String position is at (" + iStartPos + ", " + iEndPos + "), use substring() value: " + strLine.substring(iStartPos,iEndPos+1));
+	console.log((iEndPos >= 0 ? 'Matched in ' : 'Unmatched in ') + '"' +oriStrLine  + '"' + ". String position is at (" + iStartPos + ", " + iEndPos + "), use substring() value: " + strLine.substring(iStartPos,iEndPos+1));
 	return (iEndPos >= 0 ? true : false);
 };
 
-LispAutoFsm = {
-	lNumber: {
+LispAutoFsm = {};
+LispAutoFsm.inAlphaBetaArea = function(evtName){
+	if(evtName.length > 1)
+		return false;
+	if(evtName >= 'a' && evtName <= 'z')
+		return true;
+	if(evtName >= 'A' && evtName <= 'Z')
+		return true;
+	return false;
+};
+LispAutoFsm.inNumberArea = function(evtName){ 
+	var okA = {"1":true,"2":true,"3":true,"4":true,"5":true,"6":true,"7":true,"8":true,"9":true,"0":true};
+	return (okA[evtName] ? true : false);
+};
+LispAutoFsm.inLabelfirstArea = function(evtName){ 
+	return (LispAutoFsm.inAlphaBetaArea(evtName) ? true : false);
+}
+LispAutoFsm.inLabelafterArea = function(evtName){ 
+	var okA = {"-":true,"_":true};
+	if(LispAutoFsm.inAlphaBetaArea(evtName) || LispAutoFsm.inNumberArea(evtName))
+		return true;
+	return (okA[evtName] ? true : false);
+}
+LispAutoFsm.rule = {};
+LispAutoFsm.rule.lisp = {
+	Number : {
 		"null": {"1":"start","2":"start","3":"start","4":"start","5":"start","6":"start","7":"start","8":"start","9":"start"},
 		"start":{"1":"S1","2":"S1","3":"S1","4":"S1","5":"S1","6":"S1","7":"S1","8":"S1","9":"S1","0":"S1", "Separator":AutoFsm.succStat},
 		"S1":{"1":"S1","2":"S1","3":"S1","4":"S1","5":"S1","6":"S1","7":"S1","8":"S1","9":"S1","0":"S1", "Separator":AutoFsm.succStat}
+	},
+	String : {
+		"null": function(evt){
+			var fNextStat = function(x){return "start";};
+			return (LispAutoFsm.inAlphaBetaArea(evt) ? fNextStat(evt) : false); 
+		},
+		"start": function(evt){
+			var fNextStatBranch1 = function(){return "S1";};
+			var fNextStatBranch2 = function(){return AutoFsm.succStat;};
+			if(LispAutoFsm.inLabelfirstArea(evt))
+				return fNextStatBranch1();
+			else if(evt === AutoFsm.separatorLabel)
+				return fNextStatBranch2();
+			else
+				return false;
+		},
+		"S1": function(evt){
+			var fNextStatBranch1 = function(){return "S1";};
+			var fNextStatBranch2 = function(){return AutoFsm.succStat;};
+			if(LispAutoFsm.inLabelafterArea(evt))
+				return fNextStatBranch1();
+			else if(evt === AutoFsm.separatorLabel)
+				return fNextStatBranch2();
+			else
+				return false;
+		}
 	}
 };
 
@@ -201,8 +260,11 @@ function calcSimpleExp()
 	});
 	var bmatched = a.test("test defun keyword", false);
 	
-	var nTest = new AutoFsm(LispAutoFsm.lNumber);
-	nTest.test("234nb 56", false);
+	var iTest = new AutoFsm(LispAutoFsm.rule.lisp.Number);
+	iTest.test("234nb 56", false);
+	
+	var strTest = new AutoFsm(LispAutoFsm.rule.lisp.String);
+	strTest.test("labelTest01go", true);
 };
 </script>
 </html>
