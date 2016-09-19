@@ -57,29 +57,59 @@ GlobalFun.note = function(obj){
 AutoFsm = function(statJump){
 	this.statJump = statJump || {"null":false};
 };
+AutoFsm.separatorVal = " ";
+AutoFsm.separatorLabel = "Separator";
 AutoFsm.nullStat = "null";
 AutoFsm.startStat = "start";
 AutoFsm.succStat = "succ";
-AutoFsm.prototype.test = function(strLine){
+AutoFsm.prototype.getEvent = function(curChar){
+	if(curChar === AutoFsm.separatorVal)
+		return AutoFsm.separatorLabel;
+	return curChar;
+};
+AutoFsm.prototype.test = function(strLine, bWholeMatch){
 	var iStartPos = -1;
 	var iEndPos = -1;
+	strLine = strLine + AutoFsm.separatorVal;
 	
 	var stat = AutoFsm.nullStat;
 	for(var i = 0; i < strLine.length; i++)
 	{
-		var getCh = strLine[i];
+		var getCh = this.getEvent(strLine[i]);
 		stat = (this.statJump[stat][getCh] ? this.statJump[stat][getCh] : AutoFsm.nullStat);
 		if(stat === AutoFsm.startStat)
+		{
+			if(bWholeMatch)
+				if(i !== 0)
+					return false;
+			
 			iStartPos = i;
+		}
 		if(stat === AutoFsm.succStat)
 		{
+			if(bWholeMatch)
+				if(i !== strLine.length-1)
+					return false;
 			iEndPos = i;
 			break;
+		}
+		if(stat === AutoFsm.nullStat)
+		{
+			iStartPos = -1;
+			iEndPos = -1;
 		}
 	}
 	
 	console.log((iEndPos >= 0 ? 'Matched in ' : 'Unmatched in ') + '"' +strLine  + '"' + ". String position is at (" + iStartPos + ", " + iEndPos + "), use substring() value: " + strLine.substring(iStartPos,iEndPos+1));
 	return (iEndPos >= 0 ? true : false);
+};
+
+LispAutoFsm = {
+	lNumber: {
+		"null": {"1":"start","2":"start","3":"start","4":"start","5":"start","6":"start","7":"start","8":"start","9":"start"},
+		"start":{"1":"S1","2":"S1","3":"S1","4":"S1","5":"S1","6":"S1","7":"S1","8":"S1","9":"S1","0":"S1", "Separator":AutoFsm.succStat},
+		"S1":{"1":"S1","2":"S1","3":"S1","4":"S1","5":"S1","6":"S1","7":"S1","8":"S1","9":"S1","0":"S1", "Separator":AutoFsm.succStat}
+	}
 };
 
 
@@ -166,9 +196,13 @@ function calcSimpleExp()
 		"start":{"e":"1"},
 		"1":{"f":"2"},
 		"2":{"u":"3"},
-		"3":{"n":"succ"}
+		"3":{"n":"4"},
+		"4":{"Separator":AutoFsm.succStat}
 	});
-	var bmatched = a.test("test defun keyword");
+	var bmatched = a.test("test defun keyword", false);
+	
+	var nTest = new AutoFsm(LispAutoFsm.lNumber);
+	nTest.test("234nb 56", false);
 };
 </script>
 </html>
