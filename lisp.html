@@ -148,6 +148,52 @@ LispAutoFsm.inFourOperatorArea = function(evt)
 	op.forEach(function(it){if(it===evt)bM=true;});
 	return bM;
 };
+LispAutoFsm.parseBlock = function(strStream)
+{
+	var retArr = [];
+	var bMatched = false;
+	
+	var curPos = 0;
+	var endPos = strStream.length-1;
+	var strNeedTest = "";
+	var regMF = "";
+	
+	var RegTable = {};
+	var tmpRef = LispAutoFsm.rule.lisp;
+	for(var r in tmpRef)
+		RegTable[r] = new AutoFsm(tmpRef[r]);
+	
+	while (true)
+	{
+		if(curPos > endPos)
+		{
+			bMatched = true;
+			break;
+		}
+		strNeedTest = strStream.substring(curPos, endPos+1);
+		
+		regMF = "";
+		for(var p in RegTable)
+		{
+			var stepPos = RegTable[p].test(strNeedTest, false, true);
+			if(stepPos >= 0)
+			{
+				curPos = curPos + (stepPos+1);
+				regMF = "matched_" + p;
+				retArr.push({type: p, val:strNeedTest.substring(0, stepPos+1)})
+				break;
+			}
+		}
+		
+		if(regMF === "")
+		{
+			bMatched = false;
+			break;
+		}
+	}
+	
+	return bMatched ? retArr : [];
+};
 
 LispAutoFsm.rule = {};
 LispAutoFsm.rule.lisp = {
@@ -171,6 +217,22 @@ LispAutoFsm.rule.lisp = {
 			else
 				return AutoFsm.succStat;
 		},
+	},
+	String: {
+		"null": function(evt){
+			var vCh = {'"':true};
+			if(vCh[evt])
+				return AutoFsm.startStat;
+			else
+				return AutoFsm.nullStat;
+		},
+		"start": function(evt){
+			var vCh = {'"':true};
+			if(vCh[evt])
+				return AutoFsm.succStat;
+			else
+				return AutoFsm.startStat;
+		}
 	},
 	Label : {
 		"null": function(evt){
@@ -227,33 +289,54 @@ LispAutoFsm.rule.lisp = {
 				return AutoFsm.startStat;
 			return AutoFsm.succStat;
 		}
+	},
+	
+	/*syntax rule 1*/
+	Atom: {
+		"null": {"Number":AutoFsm.startStat, "String":AutoFsm.startStat},
+		"start": function(evt){
+			//any event, go succ
+			return AutoFsm.succStat;
+		}
+	},
+	ListEmpty: {/*Empty list*/
+		"null": {"BracketStart":AutoFsm.startStat},
+		"start": {"BracketEnd":AutoFsm.succStat},
+	},
+	ListAtom: {/*Empty list*/
+		"null": {"BracketStart":AutoFsm.startStat},
+		"start": {"Number":"S1","String":"S1","Label":"S1"},
+		"S1": function(evt){
+			if(evt.type === "Separator")
+				return "S2";
+			else if(evt.type === "BracketEnd")
+				return AutoFsm.succStat;
+			else
+				return AutoFsm.nullStat;
+		},
+		"S2": {"Number":"S2","String":"S2","Label":"S2"},
+	},
+	List: {
+		"null": {"BracketStart":AutoFsm.startStat},
+		"start": function(evt){
+			if(evt === "BracketEnd")
+				return AutoFsm.succStat;
+			return AutoFsm.succStat;
+		}
 	}
 };
 
 
-function Atom(strNotation){
- this.type = "";
- this.value = "";
- this.initByNotation(strNotation);
-};
-Atom.prototype.initByNotation = function(strNt)
-{
- if(strNt[0] === '"')
- {
-  this.type = "string";
-  this.value = strNt.substring(1, strNt.length-1);
- }
- else if(/[\d]+/.test(strNt))
- {
-  this.type = "number";
-  this.value = parseFloat(strNt);
- }
-  
+function Atom(atomWord){
+ this.type = atomWord.type;
+ this.value = atomWord.val;
 };
 Atom.prototype.getVal = function(){
- return this.value;
+	if(this.type == "Number")
+		return parseFloat(this.value);
+	return this.value;
 };
-function Exp(strNotation){
+function Exp(listWordArray){
  this.operator = null;
  this.operandObjArr = [];
  this.initByNotation(strNotation);
@@ -283,7 +366,7 @@ Exp.prototype.initByNotation = function(strNt)
  var opr = strNt.split(' ');
  opr.splice(0, 1);
  var lastOne = opr[opr.length-1];
- opr[opr.length-1] = lastOne.substr(0, lastOne.length-1);//remove the last ')'
+ opr[opr.length-1] = lastOne.substring(0, lastOne.length-1);//remove the last ')'
  opr.forEach(function(it){
   if(it[0] == '(')
    thisRef.operandObjArr.push(new Exp(it));
@@ -291,6 +374,7 @@ Exp.prototype.initByNotation = function(strNt)
    thisRef.operandObjArr.push(new Atom(it));
  });
 };
+/*call as one function*/
 Exp.prototype.getVal = function(){
  var paras = [];
  this.operandObjArr.forEach(function(it){
@@ -298,55 +382,52 @@ Exp.prototype.getVal = function(){
  });
  return this.operator.apply(this, paras);
 };
+/*call as a series of functions*/
+Exp.prototype.getVal1 = function(){
+ var rtVal;
+ rtVal = this.operator.apply(this);
+ this.operandObjArr.forEach(function(it){
+  rtVal = it.apply(this);
+ });
+ return rtVal;
+};
 </script>
 
 <script type="text/javascript">
-function parseBlock(strStream)
+function constructAST(wordArr)
 {
-	var retArr = [];
-	var bMatched = false;
-	
-	var curPos = 0;
-	var endPos = strStream.length-1;
-	var strNeedTest = "";
-	var regMF = "";
-	
-	var RegTable = {};
-	var tmpRef = LispAutoFsm.rule.lisp;
-	for(var r in tmpRef)
-		RegTable[r] = new AutoFsm(tmpRef[r]);
-	
-	while (true)
+	var tmpObj = null;
+	for(var nextPos = 0; nextPos < wordArr.length;)
 	{
-		if(curPos > endPos)
+		var curWord = wordArr[i];
+		if(curWord.type === "BracketStart")
 		{
-			bMatched = true;
-			break;
+			var rtObj = getList(1, nextWordArr);
+			tmpObj = rtObj.listRef;
+			nextPos = rtObj.nextPos;
 		}
-		strNeedTest = strStream.substring(curPos, endPos+1);
-		
-		regMF = "";
-		for(var p in RegTable)
+		else if(curWord.type == "Number" || curWord.type === "String")
 		{
-			var stepPos = RegTable[p].test(strNeedTest, false, true);
-			if(stepPos >= 0)
-			{
-				curPos = curPos + (stepPos+1);
-				regMF = "matched_" + p;
-				retArr.push({type: p, val:strNeedTest.substring(0, stepPos+1)})
-				break;
-			}
+			tmpObj = getAtom(0, wordArr.slice(0,1));//only calculate the first one, other ignored
+			nextPos ++;
 		}
-		
-		if(regMF === "")
-		{
-			bMatched = false;
-			break;
-		}
+		else
+			console.log("error syantx");
 	}
-	
-	return bMatched ? retArr : [];
+		
+	return tmpObj;
 };
+function getList(startPos, wordArr)
+{
+	var tmpList = null;
+	tmpList = new Exp();
+	return tmpList;
+};
+function getAtom(startPos, wordArr)
+{
+	return new Atom(wordArr[0].val);
+};
+
 function calcSimpleExp()
 {
 	var str = $("#simpleExp").val();
@@ -357,8 +438,8 @@ function calcSimpleExp()
 	debugger;
 	
 	var strLisp = '(* 3 (- 4 2))';
-	var blockArr = parseBlock(strLisp);
-	
+	var blockArr = LispAutoFsm.parseBlock(strLisp);
+	var astObj = constructAST(blockArr);
 	debugger;
 };
 </script>
