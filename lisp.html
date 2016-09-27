@@ -54,10 +54,10 @@ GlobalFun.note = function(obj){
 	});
 	var bmatched = a.test("test defun keyword", false);
 	
-	var iTest = new AutoFsm(LispAutoFsm.rule.lisp.Number);
+	var iTest = new AutoFsm(LispAutoFsm.rule.word.Number);
 	iTest.test("234nb 56", false);
 	
-	var strTest = new AutoFsm(LispAutoFsm.rule.lisp.String);
+	var strTest = new AutoFsm(LispAutoFsm.rule.word.String);
 	strTest.test("labelTest01go", true);
 */
 
@@ -148,7 +148,13 @@ LispAutoFsm.inFourOperatorArea = function(evt)
 	op.forEach(function(it){if(it===evt)bM=true;});
 	return bM;
 };
-LispAutoFsm.parseBlock = function(strStream)
+/*
+Input:
+    strStream: the stream of characters
+Output:
+	retArr: an array of word. Every word has a type and value.
+*/
+LispAutoFsm.parseWord = function(strStream)
 {
 	var retArr = [];
 	var bMatched = false;
@@ -159,7 +165,7 @@ LispAutoFsm.parseBlock = function(strStream)
 	var regMF = "";
 	
 	var RegTable = {};
-	var tmpRef = LispAutoFsm.rule.lisp;
+	var tmpRef = LispAutoFsm.rule.word;
 	for(var r in tmpRef)
 		RegTable[r] = new AutoFsm(tmpRef[r]);
 	
@@ -196,7 +202,7 @@ LispAutoFsm.parseBlock = function(strStream)
 };
 
 LispAutoFsm.rule = {};
-LispAutoFsm.rule.lisp = {
+LispAutoFsm.rule.word = {
 	Number : {
 		"null": function(evt){
 			var vCh = {"1":true,"2":true,"3":true,"4":true,"5":true,"6":true,"7":true,"8":true,"9":true};
@@ -289,8 +295,10 @@ LispAutoFsm.rule.lisp = {
 				return AutoFsm.startStat;
 			return AutoFsm.succStat;
 		}
-	},
+	}
+};
 	
+LispAutoFsm.rule.syntax = {
 	/*syntax rule 1*/
 	Atom: {
 		"null": {"Number":AutoFsm.startStat, "String":AutoFsm.startStat},
@@ -303,7 +311,7 @@ LispAutoFsm.rule.lisp = {
 		"null": {"BracketStart":AutoFsm.startStat},
 		"start": {"BracketEnd":AutoFsm.succStat},
 	},
-	ListAtom: {/*Empty list*/
+	ListAtom: {/*List only with atom parameters*/
 		"null": {"BracketStart":AutoFsm.startStat},
 		"start": {"Number":"S1","String":"S1","Label":"S1"},
 		"S1": function(evt){
@@ -316,7 +324,7 @@ LispAutoFsm.rule.lisp = {
 		},
 		"S2": {"Number":"S2","String":"S2","Label":"S2"},
 	},
-	List: {
+	ListMix: {
 		"null": {"BracketStart":AutoFsm.startStat},
 		"start": function(evt){
 			if(evt === "BracketEnd")
@@ -438,7 +446,7 @@ function calcSimpleExp()
 	debugger;
 	
 	var strLisp = '(* 3 (- 4 2))';
-	var blockArr = LispAutoFsm.parseBlock(strLisp);
+	var blockArr = LispAutoFsm.parseWord(strLisp);
 	var astObj = constructAST(blockArr);
 	debugger;
 };
