@@ -3,12 +3,45 @@
 <head>
 	<title>a Html 5 page for moble phone</title>
 	<meta charset="UTF-8"/>
-	<meta name="viewport" content="width=device-width"/>
+	<meta name="viewport" content="width=device-width,height=device-height,user-scalable=yes,initial-scale=1"/>
+	<meta name="format-detection" content="telephone=no"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+	<style>
+		html {
+			font-size:20px;
+		}
+		body {
+			font-faimly: "Helvetica Neue",Helvetica, STHeiTi sans-serif;
+			font-size: 1rem;
+		}
+		p {
+			font-size: 1rem;
+		}
+		button span{
+			font-size: 2rem;
+		}
+	</style>
 </head>
 <body>
  <p>Test Lisp Expression:</p>
  <div><textarea id="simpleExp" style="height:100px; width:300px;">(+ 12 23)</textarea></div>
- <div><button onclick="calcSimpleExp();">计算</button></div>
+ <div><button onclick="calcSimpleExp();"><span>计算</span></button></div>
+ <h2>viewport meta</h2>
+ <p>width, height is the logic WH of view port. user-scalable enable user to scale viewport.</p>
+ <p>通俗的讲，移动设备上的viewport就是设备的屏幕上能用来显示我们的网页的123458895那一块区域，在具体一点，就是浏览器上(也可能是一个app中的webview)用来显示网页的那部分区域，但viewport又不局限于浏览器可视区域的大小，它可能比浏览器的可视区域要大，也可能比浏览器的可视区域要小。</p>
+ <p>现在我们已经有两个viewport了：layout viewport 和 visual viewport。但浏览器觉得还不够，因为现在越来越多的网站都会为移动设备进行单独的设计，所以必须还要有一个能完美适配移动设备的viewport。所谓的完美适配指的是，首先不需要用户缩放和横向滚动条就能正常的查看网站的所有内容；第二，显示的文字的大小是合适，比如一段14px大小的文字，不会因为在一个高密度像素的屏幕里显示得太小而无法看清，理想的情况是这段14px的文字无论是在何种密度屏幕，何种分辨率下，显示出来的大小都是差不多的。当然，不只是文字，其他元素像图片什么的也是这个道理。ppk把这个viewport叫做 ideal viewport，也就是第三个viewport——移动设备的理想viewport。</p>
+ <p> ideal viewport并没有一个固定的尺寸，不同的设备拥有有不同的ideal viewport。所有的iphone的ideal viewport宽度都是320px，无论它的屏幕宽度是320还是640，也就是说，在iphone中，css中的320px就代表iphone屏幕的宽度。</p>
+ 
+ <div class="cnblogs_code" style="border-top: #cccccc 1px solid; border-right: #cccccc 1px solid; border-bottom: #cccccc 1px solid; padding-bottom: 5px; padding-top: 5px; padding-left: 5px; border-left: #cccccc 1px solid; padding-right: 5px; background-color: #f5f5f5"><pre><span style="color: #0000ff">&lt;</span><span style="color: #800000">meta </span><span style="color: #ff0000">name</span><span style="color: #0000ff">="viewport"</span></div>
+ <div class="cnblogs_code" style="border-top: #cccccc 1px solid; border-right: #cccccc 1px solid; border-bottom: #cccccc 1px solid; padding-bottom: 5px; padding-top: 5px; padding-left: 5px; border-left: #cccccc 1px solid; padding-right: 5px; background-color: #f5f5f5"><pre><span style="color: #ff0000"> content</span><span style="color: #0000ff">="width=device-width, "</span><span style="color: #0000ff">&gt;</span></pre></div>
+ <div class="cnblogs_code" style="border-top: #cccccc 1px solid; border-right: #cccccc 1px solid; border-bottom: #cccccc 1px solid; padding-bottom: 5px; padding-top: 5px; padding-left: 5px; border-left: #cccccc 1px solid; padding-right: 5px; background-color: #f5f5f5"><pre><span style="color: #ff0000"> content</span><span style="color: #0000ff">="initial-scale=1.0, "</span><span style="color: #0000ff">&gt;</span></pre></div>
+ <div class="cnblogs_code" style="border-top: #cccccc 1px solid; border-right: #cccccc 1px solid; border-bottom: #cccccc 1px solid; padding-bottom: 5px; padding-top: 5px; padding-left: 5px; border-left: #cccccc 1px solid; padding-right: 5px; background-color: #f5f5f5"><pre><span style="color: #ff0000"> content</span><span style="color: #0000ff">="maximum-scale=1.0, "</span><span style="color: #0000ff">&gt;</span></pre></div>
+ <div class="cnblogs_code" style="border-top: #cccccc 1px solid; border-right: #cccccc 1px solid; border-bottom: #cccccc 1px solid; padding-bottom: 5px; padding-top: 5px; padding-left: 5px; border-left: #cccccc 1px solid; padding-right: 5px; background-color: #f5f5f5"><pre><span style="color: #ff0000"> content</span><span style="color: #0000ff">="user-scalable=0"</span><span style="color: #0000ff">&gt;</span></pre></div>
+ 
+ <p>该meta标签的作用是让当前viewport的宽度等于设备的宽度，同时不允许用户手动缩放。也许允不允许用户缩放不同的网站有不同的要求，但让viewport的宽度等于设备的宽度，这个应该是大家都想要的效果，如果你不这样的设定的话，那就会使用那个比屏幕宽的默认viewport，也就是说会出现横向滚动条。</p>
+ <p>要得到ideal viewport就必须把默认的layout viewport的宽度设为移动设备的屏幕宽度。因为meta viewport中的width能控制layout viewport的宽度，所以我们只需要把width设为width-device这个特殊的值就行了。</p>
+ <p>最后，总结一下，要把当前的viewport宽度设为ideal viewport的宽度，既可以设置 width=device-width，也可以设置 initial-scale=1，但这两者各有一个小缺陷，就是iphone、ipad以及IE 会横竖屏不分，通通以竖屏的ideal viewport宽度为准。所以，最完美的写法应该是，两者都写上去，这样就 initial-scale=1 解决了 iphone、ipad的毛病，width=device-width则解决了IE的毛病：</p>
 </body>
 <script src="/lib/zepto/zepto.js"></script>
 <script type="text/javascript">
