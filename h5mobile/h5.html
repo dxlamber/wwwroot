@@ -13,33 +13,58 @@
 			position: relative;
 			width:16.8rem;
 			margin-top:10px;
-			margin-left: auto;margin-right: auto; //定宽元素水平居中
+			margin-left: auto;margin-right: auto; /*定宽元素水平居中*/
 		}
 		li{
 			width: 8.2rem;
 			height: 7.8rem;
-			background-color: pink;
 			margin-right:2px;
 			margin-bottom:3px!important;
 			float:left;
+			
+			border-radius: 6px;
+			border: 1px solid transparent;
+			box-shadow: outset 0 3px 5px rgba(0, 0, 0, .125);
 		}
 		
+		/*Use the "success" and "danger" of the bootstrap style*/
+		.noCheck{
+			background-color: #f2dede;
+			border-color: #ebccd1;
+		}
+		.noCheck:hover{
+			background-color: #ebcccc;
+		}
+		.hasCheck{
+			background-color: #dff0d8;
+			border-color: #d6e9c6;
+		}
+		.hasCheck:hover{
+			background-color: #d0e9c6;
+		}
 	</style>
 </head>
 <body>
 	<ul>
-		<li><h2>aF</h2><p>desc</p></li>
-		<li>b</li>
-		<li>c</li>
-		<li>d</li>
-		<li>e</li>
-		<li>f</li>
-		<li>g</li>
-		<li>h</li>
+		<li class="noCheck"><h2>状态 1</h2><p>未点击</p></li>
+		<li class="hasCheck"><h2>状态 2</h2><p>已点击</p></li>
+		<li class="noCheck"><h2>状态 2</h2><p>如何表示动作响应</p></li>
+		<li class="noCheck"><h2>其它状态</h2><p>比如按压，但是不释放，按压划走，相当于没有按压。</p></li>
+		<li class="noCheck">e</li>
+		<li class="noCheck">f</li>
+		<li class="noCheck">g</li>
+		<li class="noCheck">h</li>
 	</ul>
 </body>
 <script src="/lib/zepto/zepto.js"></script>
 <script type="text/javascript">
-
+function startEntry()
+{
+	bindEvents();
+};
+function bindEvents(){
+	$("ul li").on("touchend", function(){console.log(arguments)});
+};
+$(document).ready(startEntry);
 </script>
 </html>
