@@ -260,39 +260,3 @@ LispAutoFsm.rule.word = {
 	}
 };
 
-	
-LispAutoFsm.rule.syntax = {
-	/*syntax rule 1*/
-	Atom: {
-		"null": {"Number":AutoFsm.startStat, "String":AutoFsm.startStat},
-		"start": function(evt){
-			//any event, go succ
-			return AutoFsm.succStat;
-		}
-	},
-	ListEmpty: {/*Empty list*/
-		"null": {"BracketStart":AutoFsm.startStat},
-		"start": {"BracketEnd":AutoFsm.succStat},
-	},
-	ListAtom: {/*List only with atom parameters*/
-		"null": {"BracketStart":AutoFsm.startStat},
-		"start": {"Number":"S1","String":"S1","Label":"S1"},
-		"S1": function(evt){
-			if(evt.type === "Separator")
-				return "S2";
-			else if(evt.type === "BracketEnd")
-				return AutoFsm.succStat;
-			else
-				return AutoFsm.nullStat;
-		},
-		"S2": {"Number":"S2","String":"S2","Label":"S2"},
-	},
-	ListMix: {
-		"null": {"BracketStart":AutoFsm.startStat},
-		"start": function(evt){
-			if(evt === "BracketEnd")
-				return AutoFsm.succStat;
-			return AutoFsm.succStat;
-		}
-	}
-};

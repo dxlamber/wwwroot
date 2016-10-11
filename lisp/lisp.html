@@ -12,18 +12,19 @@
 </body>
 <script src="/lib/jquery/jquery.js"></script>
 <script src="/lib/bootstrap/js/bootstrap.js"></script>
+<script src="utils.js"></script>
 <script src="autofsm.js"></script>
 <script src="computeobj.js"></script>
 <script type="text/javascript">
 var GlobalEnv = {};
-GlobalEnv.add = function(){
+GlobalEnv["+"] = function(){
  return [].reduce.call(arguments, function(pv, cv){return pv+cv;}, 0);
 };
-GlobalEnv.mult = function(){
+GlobalEnv["*"] = function(){
  debugger;
  return [].reduce.call(arguments, function(pv, cv){return pv*cv;}, 1);
 };
-GlobalEnv.minus = function(){
+GlobalEnv["-"] = function(){
  if(arguments.length != 2)
  {
 	debugger;
@@ -32,7 +33,7 @@ GlobalEnv.minus = function(){
 	
  return arguments[0] - arguments[1];
 };
-GlobalEnv.div = function(){
+GlobalEnv["/"] = function(){
  if(arguments.length != 2)
  {
 	debugger;
@@ -47,24 +48,56 @@ GlobalEnv.note = function(obj){
 </script>
 
 <script type="text/javascript">
-function constructAST(wordArr, syntaxRules)
+function createTree(wordArr)
 {
-	var tmpObj = null;
-	for(var nextPos = 0; nextPos < wordArr.length;)
+	var gCurPos = 0;
+	
+	var startExp = function()
 	{
-		var curWord = wordArr[i];
-		for(var p in syntaxRules)
+		var tmpObj = null;
+		var paraArr = [];
+		for(; gCurPos < wordArr.length; gCurPos ++)
 		{
-			/*if current parsed word match syntaxRules[p]
-				分解当前元素为一个可计算对象。
-			*/
-			/*else 
-			*/
+			var curWord = wordArr[gCurPos];
+			switch(curWord.type)
+			{
+				case "BracketStart": 
+					gCurPos = gCurPos + 1;//the "(" is processed, go next character.
+					paraArr.push(startExp());
+					break;
+				case "BracketEnd":
+					return (new Exp(paraArr));
+					break;
+				case "Number":
+				case "String":
+				case "Label":
+				case "FourOperator":
+					paraArr.push(new Atom(wordArr[gCurPos].type, wordArr[gCurPos].val));
+					break;
+				default: 
+					console.log("Error syntax!!!")
+					break;
+			}
 		}
-	}
 		
+	};
+	
+	
+	gCurPos = 0;
+	var tmpObj = null;
+	if(wordArr[0].type === "BracketStart")
+	{
+		gCurPos = 1;
+		tmpObj = startExp();
+	}
+	else
+		tmpObj = new Atom(wordArr[gCurPos].type, wordArr[gCurPos].val);
+			
+	console.log(tmpObj);
 	return tmpObj;
 };
+
+
 function getList(startPos, wordArr)
 {
 	var tmpList = null;
@@ -87,6 +120,8 @@ function calcSimpleExp()
 	
 	var strLisp = '(* 3 (- 4 2))';
 	var blockArr = LispAutoFsm.removeSeparator(LispAutoFsm.parseWord(strLisp));
+	debugger;
+	var treeRootRef = createTree(blockArr);
 	debugger;
 };
 </script>
