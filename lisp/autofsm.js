@@ -156,6 +156,13 @@ LispAutoFsm.parseWord = function(strStream)
 	return bMatched ? retArr : [];
 };
 
+LispAutoFsm.removeSeparator = function(arrWord)
+{
+	var newArr = [];
+	newArr = arrWord.filter(function(it){return (it.type !== "Separator")});
+	return newArr;
+}
+
 LispAutoFsm.rule = {};
 LispAutoFsm.rule.word = {
 	Number : {

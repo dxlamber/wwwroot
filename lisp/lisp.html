@@ -78,16 +78,15 @@ function getAtom(startPos, wordArr)
 
 function calcSimpleExp()
 {
-	var str = $("#simpleExp").val();
+	/*var str = $("#simpleExp").val();
 	var inputL = str.split('\n').pop();
 	var v = (inputL[0] == '(' ? new Exp(inputL) : new Atom(inputL));
-	$("#simpleExp").val(str + "\n" + v.getVal());
+	$("#simpleExp").val(str + "\n" + v.getVal());*/
 	
 	debugger;
 	
 	var strLisp = '(* 3 (- 4 2))';
-	var blockArr = LispAutoFsm.parseWord(strLisp);
-	var astObj = constructAST(blockArr);
+	var blockArr = LispAutoFsm.removeSeparator(LispAutoFsm.parseWord(strLisp));
 	debugger;
 };
 </script>
