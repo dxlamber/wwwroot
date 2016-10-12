@@ -7,7 +7,7 @@
 </head>
 <body>
  <p>Test Lisp Expression:</p>
- <div><textarea id="simpleExp" style="height:100px; width:300px;">(+ 12 23)</textarea></div>
+ <div><textarea id="simpleExp" style="height:100px; width:300px;">(* 3 (- 4 2))</textarea></div>
  <div><button onclick="calcSimpleExp();">计算</button></div>
 </body>
 <script src="/lib/jquery/jquery.js"></script>
@@ -30,7 +30,7 @@ GlobalEnv["-"] = function(){
 	debugger;
 	return;
  }
-	
+
  return arguments[0] - arguments[1];
 };
 GlobalEnv["/"] = function(){
@@ -39,7 +39,7 @@ GlobalEnv["/"] = function(){
 	debugger;
 	return;
  }
-	
+
  return arguments[0] / arguments[1];
 };
 GlobalEnv.note = function(obj){
@@ -51,7 +51,7 @@ GlobalEnv.note = function(obj){
 function createTree(wordArr)
 {
 	var gCurPos = 0;
-	
+
 	var startExp = function()
 	{
 		var tmpObj = null;
@@ -61,7 +61,7 @@ function createTree(wordArr)
 			var curWord = wordArr[gCurPos];
 			switch(curWord.type)
 			{
-				case "BracketStart": 
+				case "BracketStart":
 					gCurPos = gCurPos + 1;//the "(" is processed, go next character.
 					paraArr.push(startExp());
 					break;
@@ -74,15 +74,15 @@ function createTree(wordArr)
 				case "FourOperator":
 					paraArr.push(new Atom(wordArr[gCurPos].type, wordArr[gCurPos].val));
 					break;
-				default: 
+				default:
 					console.log("Error syntax!!!")
 					break;
 			}
 		}
-		
+
 	};
-	
-	
+
+
 	gCurPos = 0;
 	var tmpObj = null;
 	if(wordArr[0].type === "BracketStart")
@@ -92,7 +92,7 @@ function createTree(wordArr)
 	}
 	else
 		tmpObj = new Atom(wordArr[gCurPos].type, wordArr[gCurPos].val);
-			
+
 	console.log(tmpObj);
 	return tmpObj;
 };
@@ -111,18 +111,14 @@ function getAtom(startPos, wordArr)
 
 function calcSimpleExp()
 {
-	/*var str = $("#simpleExp").val();
+	var str = $("#simpleExp").val();
 	var inputL = str.split('\n').pop();
-	var v = (inputL[0] == '(' ? new Exp(inputL) : new Atom(inputL));
-	$("#simpleExp").val(str + "\n" + v.getVal());*/
-	
-	debugger;
-	
+
 	var strLisp = '(* 3 (- 4 2))';
-	var blockArr = LispAutoFsm.removeSeparator(LispAutoFsm.parseWord(strLisp));
-	debugger;
+	var blockArr = LispAutoFsm.removeSeparator(LispAutoFsm.parseWord(inputL));
+
 	var treeRootRef = createTree(blockArr);
-	debugger;
+	$("#simpleExp").val(str + "\n" + treeRootRef.val());
 };
 </script>
 </html>

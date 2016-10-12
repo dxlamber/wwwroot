@@ -40,6 +40,8 @@ function Exp(paraArr)
 inheritS(Exp, ComputedObj);
 Exp.prototype.val = function()
 {
-	return this.paraArr[0].apply(this, this.paraArr.slice(1, this.paraArr.length));
+	var para = [];
+	for(var i = 1; i < this.paraArr.length; i ++)
+		para.push(this.paraArr[i].val());
+	return this.paraArr[0].val().apply(this, para);
 };
-
