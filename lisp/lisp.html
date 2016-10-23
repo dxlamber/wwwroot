@@ -14,38 +14,8 @@
 <script src="../lib/bootstrap/js/bootstrap.js"></script>
 <script src="utils.js"></script>
 <script src="autofsm.js"></script>
+<script src="Enviroment.js"></script>
 <script src="computeobj.js"></script>
-<script type="text/javascript">
-var GlobalEnv = {};
-GlobalEnv["+"] = function(){
- return [].reduce.call(arguments, function(pv, cv){return pv+cv;}, 0);
-};
-GlobalEnv["*"] = function(){
- debugger;
- return [].reduce.call(arguments, function(pv, cv){return pv*cv;}, 1);
-};
-GlobalEnv["-"] = function(){
- if(arguments.length != 2)
- {
-	debugger;
-	return;
- }
-
- return arguments[0] - arguments[1];
-};
-GlobalEnv["/"] = function(){
- if(arguments.length != 2)
- {
-	debugger;
-	return;
- }
-
- return arguments[0] / arguments[1];
-};
-GlobalEnv.note = function(obj){
- return obj.toNote();
-};
-</script>
 
 <script type="text/javascript">
 function createTree(wordArr)
@@ -95,18 +65,6 @@ function createTree(wordArr)
 
 	console.log(tmpObj);
 	return tmpObj;
-};
-
-
-function getList(startPos, wordArr)
-{
-	var tmpList = null;
-	tmpList = new Exp();
-	return tmpList;
-};
-function getAtom(startPos, wordArr)
-{
-	return new Atom(wordArr[0].val);
 };
 
 function calcSimpleExp()
