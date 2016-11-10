@@ -8,14 +8,27 @@
 <body>
 	<h1>Hello, world! </h1>
 	<p>All test items goes here: </p>
-	<ul>
-		<li><a href="./layout/grayscale/index.html">Gray layout</a></li>
-		<li><a href="./lisp/lisp.html">Lisp language analysis</a></li>
-		<li><a href="./h5mobile/h5.html">A sample Html 5 page for mobile phone</a></li>
-	</ul>
+	<ul id="subContentContainer"></ul>
 </body>
 <script src="./lib/jquery/jquery.js"></script>
 <script src="./lib/bootstrap/js/bootstrap.js"></script>
 <script>
+var gSubContentTpl = '<li><a href="{lnk}">{txt}</a></li>';
+var gSubContentData = [
+	{lnk: "./layout/grayscale/index.html", txt: "Gray layout"},
+	{lnk: "./lisp/lisp.html", txt: "Lisp language analysis"},
+	{lnk: "./h5mobile/h5.html", txt: "A sample Html 5 page for mobile phone"},
+	{lnk: "./csstrick/button_psedoclass.html", txt: "A sample link button styles, Normal, hover, mousedown, focus"}
+];
+function mainEntry()
+{
+	$(gSubContentData.map(function(it, i){
+		return gSubContentTpl.replace('{lnk}', it.lnk).replace('{txt}', it.txt);
+	}).reduce(function(pval, it, i){
+		return (pval + it);
+	}), "").appendTo($('#subContentContainer'));
+};
+
+$(document).ready(mainEntry);
 </script>
 </html>
