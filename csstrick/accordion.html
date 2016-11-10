@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title> 垂直手风琴 </title>
+		<style>
+			.accordionMenu{
+				background: #fff;
+				color: #424242;	/*light black*/
+				font: 12px Verdana,Arial,sans-serif;/*default simsun is looks bad*/
+				
+				/*Use width and margin: auto to horizental align center*/
+				width: 500px;
+				margin: 0 auto;
+				
+				padding: 10px;
+			}
+			.accordionMenu h2{
+				margin: 5px 0; /*the default margin top&bottom for h2 title is 0.83em， defaut font-size if 1.5em*/
+				padding: 0; /*maybe some browser has padding,  but chrome does not need*/
+				position: relative; /*for position inner "a" element*/
+			}
+			.accordionMenu h2:before {
+				content: "";
+				
+				/* 边框有厚度，对象无高度，宽度，只剩下border 
+				会形成四个三角形对顶角的正方形。每个三角形代表一边边框。
+				只需设置需要的为某种颜色，其余三边透明即可得到一个小三角，
+				*/
+				border: 5px solid red;
+				border-color: red transparent transparent; 
+				height: 0;
+				width: 0;
+				
+				/*position to the right part of h2*/
+				position: absolute;
+				top: 15px;
+				right: 10px;
+			}
+			.accordionMenu h2 a {
+				background: #8f8f8f;
+				background: linear-gradient(to bottom, #cecece, #8f8f8f);
+				color: #424242;
+				
+				display: block; /*extend the width to parent width*/
+				margin: 0;
+				padding: 10px 10px;/*the container h2's height will be lifted by 10 + text inline height + 10.*/
+				
+				font-size: 13px;
+				font-weight: normal;
+				
+				text-shadow: 2px 2px 2px #aeaeae;
+				text-decoration: none; /*remove the under line*/
+			}
+			.accordionMenu :target h2 a,
+			.accordionMenu h2 a:focus,
+			.accordionMenu h2 a:hover,
+			.accordionMenu h2 a:active{
+				background: #2288dd;
+				background: linear-gradient(to bottom, #6bb2ff, #2288dd);
+				color: #fff;
+			}
+			.accordionMenu p{
+				margin: 0
+				padding: 0 10px;
+				
+				/*default hidden the content*/
+				height: 0;
+				overflow: hidden;
+				
+				transition: height 0.5s ease-in;
+			}
+			.accordionMenu :target p{
+				height: 100px;
+				overflow: auto;
+			}
+			.accordionMenu :target h2:before{
+				border-color: transparent transparent transparent #fff;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="accordionMenu">
+			<div class="menuSection" id="brand">
+				<h2><a href="#brand">Brand</a></h2>
+				<p>Lorem ipsum dolor ...</p>
+			</div>
+			<div class="menuSection" id="promotion">
+				<h2><a href="#promotion">Promotion</a></h2>
+				<p>Lorem ipsum dolor sit promotion...</p>
+			</div>
+			<div class="menuSection" id="event">
+				<h2><a href="#event">Event</a></h2>
+				<p>Lorem ipsum dolor sit event...</p>
+			</div>
+		</div>
+		<p>
+			<h1>理解</h1>
+			<ul>
+				<li>h2 标题的默认上下margin是0.83em。字体是1.5em</li>
+				<li>em 是一个字符em 框的高度，等于其font-size值。</li>
+				<li>em 应用于font-size上，表示基于继承下来的font-size的倍数。应用于其它，表示基于当前元素的font-size计算出的值的倍数。</li>
+				<li> 用两个三角形互相叠压，形成一个空心三角形。 这里用一个三角形，并填充颜色，实现一个实心三角形。 </li>
+				<li> 三角形的标准做法： 使用0宽高，有边框的框，这时四个边框会形成四个对顶角，给需要的填充颜色，不需要的透明即可。</li>
+				<li> 使用行内框，块级框都可以。</li>
+				<li> 类似按钮的交互效果，都是用a标签来做的。</li>
+			</ul>
+		<p>
+	</body>
+</html>
