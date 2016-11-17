@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title> UI 元素状态伪类选择器 </title>
+		<style>
+			textarea:focus,
+			input[type="text"]:focus,
+			input[type="password"]:focus{
+				border-color: rbga(82,168,236,.8);
+				outline: 0;
+				box-shadow: 0 0 8px rbga(82,168,236,.6);
+			}
+			select:focus,
+			input[type="file"]:focus,
+			input[type="radio"]:focus,
+			input[type="checkbox"]:focus{
+				outline: thin dotted #333;
+				outline 5px auto -webkit-focus-ring-color;
+				outline-offset: -2px;
+			}
+			input[disabled],
+			select[disabled],
+			textarea[disabled]{
+				cursor: not-allowed;
+				background-color: #eee;
+				border-color: #ddd;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="accordionMenu">
+			详细例子请看bootstrap官方网站。http://getbootstrap.com/css/?#forms-control-focus
+		</div>
+		<p>
+			<h1>理解</h1>
+			<ul>
+				<li>常用的有三个： E:checked,  E: enabled,  E:disabled</li>
+				<li> <h2> Bootstrap 的一些状态的设计，使用到了这些状态伪类 </h2>
+					<ul>
+						<li>focus 状态。 使用了天蓝边框，天蓝阴影。以前使用outline来实现的。看起来像是发着荧荧的蓝光</li>
+						<li>disabled 状态。使用了disabled属性。 使用了灰色背景，半透明蒙版。改变光标为"not-allowed"</li>
+						<li>readonly 状态。使用了readonly属性。 使用了灰色背景，半透明蒙版。不改变光标。</li>
+						<li>禁用复选按钮</li>
+						<li>警告状态</li>
+						<li>错误状态</li>
+						<li>正确状态</li>
+						<li>启用按钮</li>
+						<li>禁用按钮</li>
+					</ul>
+				</li>
+				
+			</ul>
+		<p>
+	</body>
+</html>
