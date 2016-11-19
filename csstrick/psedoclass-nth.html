@@ -3,83 +3,68 @@
 	<head>
 		<meta charset="UTF-8">
 		<style>
-			.test-area{
-				text-align: center;
-				line-height: 300px; /*to vertical align the child div*/
-				outline: gray dashed 1px;
-			}
-			.link-button-container{
-				display:inline-block;
-				line-height: normal;/*the child div restore to normal line height(1.2 * font size of current line)*/
-				text-align:center;
-			}
+			ol {list-style-type:none;}
+			li {display:inline-block;width:40px;}
 			
-			.link-btn {
-				/*Use linear gadient as background color, to show an button like dewdrop(露珠效果)*/
-				background-color: #0074cc;
-				background-image: linear-gradient(to bottom, #0088cc, #0055cc);
-				background-repeat:repeat-x; /*No repeat for y direction, because we want use background color in Y direction*/
-				/*Text color, should contrast with the background-color, use blue-white combination.*/
-				/*Another think, background color should use dark color, text color should use light color
-				such as, the white is the bright color, and blue is the dark color.
-				*/
-				color: #fff;
-				
-				/*draw border of the button, use gray color, round corner*/
-				display:inline-block;
-				border: 1px solid #ccc;
-				border-radius: 6px;
-				
-				/*the text size, the two direction space between border and the text*/
-				font-size: 20px;
-				font-weight: normal;
-				line-height: normal;
-				text-align: center;
-				vertical-align: middle;
-				padding: 0.85em 1.2em;/*vertical space should be about 0.8 * fontsize; horizitol space should be about 1.2 * fontsize */
-				
-				/*remove default cursor and underline for <A> element*/
-				cursor: pointer;
-				text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);/*can make the text bolder in vertical direction, it is just hobby of Chinese ?*/
-				text-decoration: none;
-				
-				outline: 0;
-			}
-			.link-btn:hover{
-				/*move the linear gradient a little up, filled the new place with the background color
-				It is looks like a dark bottom side curtain pulled up a little.
-				*/
-				background-position: 0 -15px;
-				background-color: #0055cc;
-			}
-			.link-btn:active{
-				/*Use the more dark color, more gray text color to indecate we are click on the button*/
-				background-color: #004099;
-				background-image: none;
-				box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
-				color: rgba(255, 255, 255, 0.75);
-				
-				outline: 0;
-			}
-			.link-btn:focus{
-				/*Use outline to indicate the status of focus,  the outline border is located at the outside of the round corner, should shrink 2 pixel.*/
-				outline: thin dotted #333;
-				outline-offset: -2px;
-			}
-			#test{
-			  background-color:#ccc;
-			}
 		</style>
 	</head>
 	<body>
 		<h1>Test the css trick here</h1>
-		<div class="test-area">
-			<div class="link-button-container"><a href="#" class="link-btn">View project on GitHub</a></div>
+		<div style="text-align:center;">
+		<span>aaa bbb</span>
 		</div>
+		<ol style="text-align:center;width:200px;margin:auto;padding:0px;">
+				<li>1</li>
+				<li>2</li>
+				<li>3</li>
+				<li>4</li>
+				<li>5</li>
+				<li>6</li>
+				<li>7</li>
+				<li>8</li>
+				<li>9</li>
+				<li>10</li>
+				<li>11</li>
+				<li>12</li>
+				<li>13</li>
+				<li>14</li>
+				<li>15</li>
+				<li>16</li>
+				<li>17</li>
+				<li>18</li>
+				<li>19</li>
+				<li>20</li>
+			</ol>
+		
+		<div class="testArea">
+			<ol>
+				<li>1</li>
+				<li>2</li>
+				<li>3</li>
+				<li>4</li>
+				<li>5</li>
+				<li>6</li>
+				<li>7</li>
+				<li>8</li>
+				<li>9</li>
+				<li>10</li>
+				<li>11</li>
+				<li>12</li>
+				<li>13</li>
+				<li>14</li>
+				<li>15</li>
+				<li>16</li>
+				<li>17</li>
+				<li>18</li>
+				<li>19</li>
+				<li>20</li>
+			</ol>
+		</div>
+		
 		<ul>
 			<li> 
-				<p>实验区域 .test-area 的设计，使用了 line-height 的垂直居中特性来让子元素垂直居中， 在子元素中再将 line-height 恢复成贴合文本高度的行高。</p>
-				<p> line-height 当值为纯数字时表示一个系数，子元素继承行高时，会继承系数。使用时：计算值 = 系数 × 当前行的字体大小 。 normal也是纯数字的一种，值大概是1.2 。</p>
+				<p>水平方向格式化，只有左右margin， 内容width，这三个对象可以设置为auto。</p>
+				<p>切记， padding是不能设置为auto的。</p>
 				<p> line-height 为其他值，比如：150%, 23px 等等时，会计算出一个计算值。子元素继承行高时，直接继承并使用最终计算值。</p>
 				<p> line-height 撑开其父div，而非文本内容。这是一个全新的角度来理解line-height</p>
 			</li>
