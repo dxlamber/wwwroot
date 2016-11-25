@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<style>
+			div, p {margin: 0px; padding:0px;}
+			.demo {
+				width: 600px;
+				margin: 40px auto;
+				font-family: 'trebuchet MS', 'Lucida sans', Arial;
+				font-size: 14px;
+				color: #444;
+			}
+			
+			
+			table {
+				border-collapse: separate;
+				border-spacing: 0;
+				*border-collapse: expression('separate', cellSpacing='0px'); /*IE7 and lower*/
+				width:100%;
+			}
+			/*the rounder corner settings ------------------------------------------------------*/
+			.bordered {
+				border: solid #ccc 1px;
+				border-radius: 6px;
+			}
+			.bordered th:first-child {
+				border-radius: 6px 0 0 0;
+			}
+			.bordered th:last-child {
+				border-radius: 0 6px 0 0;
+			}
+			.bordered tr:last-child td:last-child {
+				border-radius: 0 0 6px 0;
+			}
+			.bordered tr:last-child td:first-child {
+				border-radius: 0 0 0 6px;
+			}
+			.bordered th, .bordered td{
+				border-top: 1px solid #ccc;
+				border-left: 1px solid #ccc;
+			}
+			.bordered th{
+				border-top:none;
+			}
+			.bordered td:first-child, .bordered th:first-child{
+				border-left:none;
+			}
+			/*the text, padding, margin, border settings ------------------------------------------------------*/
+			.bordered th, .bordered td{
+				padding: 10px;
+				text-align: left;
+			}
+			/*the decoratation for table header line settings ------------------------------------------------------*/
+			.bordered th{
+				background-color: #dce9f9;
+				background-image: linear-gradient(to bottom, #ebf3fc, #dce9f9);
+			}
+			
+			/*the shadow, hover and others settings ------------------------------------------------------*/
+			.bordered {
+				box-shadow: 0 1px 1px #ccc;
+			}
+			.bordered tr:hover{
+				background-color: #fbf8e9;
+			}
+			
+			
+			.zebra td, .zebra th {
+				padding: 10px;
+				border-bottom: 1px solid #f2f2f2;
+			}
+			.zebra tbody tr:nth-child(even) {
+				background-color: #f5f5f5;
+			}
+			.zebra th {
+				 text-align: left;
+				 border-bottom: 1px solid #ccc;
+				 background-image: linear-gradient(to bottom, #f5f5f5, #eee);
+			}
+			.zebra th:first-child {
+				border-radius: 6px 0 0 0;
+			}
+			.zebra th:last-child {
+				border-radius: 0 6px 0 0;
+			}
+			.zebra tfoot td{
+				border-bottom: 0;
+				border-top: 1px solid #fff;
+				background-color: #f1f1f1;
+			}
+			.zebra tfoot td:last-child {
+				border-radius: 0 0 6px 0;
+			}
+			.zebra tfoot td:first-child {
+				border-radius: 0 0 0 6px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="demo">
+			<table class="bordered">
+				<thead><tr><th>#</th><th>IMDB Top 10 Movies</th><th>Year</th></tr></thead>
+				<tbody>
+					<tr><td>1</td><td>The Shawshank Redemption</td><td>1994</td></tr>        
+					<tr><td>2</td><td>The Godfather</td><td>1972</td></tr>
+					<tr><td>3</td><td>The Godfather: Part II</td><td>1974</td></tr>
+					<tr><td>4</td><td>The Good, the Bad and the Ugly</td><td>1966</td></tr>
+				</tbody>
+			</table>
+			<table class="zebra">
+				<thead><tr><th>#</th><th>IMDB Top 10 Movies</th><th>Year</th></tr></thead>
+				<tbody>
+					<tr><td>1</td><td>The Shawshank Redemption</td><td>1994</td></tr>        
+					<tr><td>2</td><td>The Godfather</td><td>1972</td></tr>
+					<tr><td>3</td><td>The Godfather: Part II</td><td>1974</td></tr>
+					<tr><td>4</td><td>The Good, the Bad and the Ugly</td><td>1966</td></tr>
+				</tbody>
+				<tfoot><tr><td>&nbsp;</td><td></td><td></td></tr></tfoot>
+			</table>
+		</div>
+		</div>
+		
+		<ul>
+			<li> 
+				<p>文本字体大小14，留白10，是一个常用的设置。</p>
+				<p>渲染出来的效果是，字体框14像素高，加上下各2像素空白为行高，再加上下10像素空白为padding，抵达上下border</p>
+				<p> 所以常用指定宽度，指定padding，而margin auto。让其左右居中。</p>
+			</li>
+			<li>
+				<p> 想让物体略微专业化一点，一般是：</p>
+				<p> 使用边框框住（这很重要）</p>
+				<p> 并且留足够白（这也很重要） </p>
+				<p> 如果可以，在使用横向或者竖向对齐 </p>
+			</li>
+			<li>
+				<p> 想让物体略微立体化一点，一般是：</p>
+				<p> 先使其专业化一点 </p>
+				<p> 再使用box-shadow把它浮起来 </p>
+				<p> 再使用gradient background image把它的表面颜色设置渐变 </p>
+			</li>
+		</ul>
+	</body>
+</html>
