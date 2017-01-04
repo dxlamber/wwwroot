@@ -1,0 +1,19 @@
+逗号表达式
+逗号表达式的一般形式：表达式1，表达式2，表达式3……表达式n
+逗号表达式的求解过程是：先计算表达式1的值，再计算表达式2的值，……一直计算到表达式n的值。最后整个逗号表达式的值是表达式n的值。
+
+函数原型的bind()，call()和apply()方法
+bind方法是函数定义时改变this对象
+apply和call方法是函数运行是改变this对象
+apply的参数使用数组，call的参数是一个个罗列的。
+
+形参与实参
+函数对象的length属性，表示函数对象的形参的个数。
+function sum(x,y,z){return x+y+z;};
+sum.length === 3;
+函数执行是的arguments.length属性，表示函数执行时传入的实参个数。
+function sum(x,y,z){console.log(aruments.length); return x+y+z;};
+sum(7,8);//2
+sum(7,8,9);//3
+sum(7,8,9,7);//4
+
