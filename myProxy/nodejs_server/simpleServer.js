@@ -9,11 +9,24 @@ srv.on('connection', function(sck){
 	gBuf = Buffer.alloc(0);
 	
 	
+	var wrapHttpRespFunc = function(bf){
+		bf = bf.toString();
+		var strStatusLine = 'HTTP/1.1 200 OK';
+		var strMsgHead = 'Content-Length: ' + bf.length + '\r\n';
+		strMsgHead += 'Content-Type: text/html\r\n';
+		var strMsgBody = '<div>' + bf.replace(/\r\n/g,'</div><div>') + '</div>';
+		console.log(strMsgBody);
+		var rspBf = Buffer.from(strStatusLine + '\r\n'
+		+ strMsgHead + '\r\n'
+		+ strMsgBody);
+		return rspBf;
+	};
 	var onWriteSocketFunc = (function(sk){
 		return function(data){
 			console.log("Write data to peer: \n");
 			console.log(data.toString());
-			sk.write(data);
+			//sk.write(data);
+			sk.write(wrapHttpRespFunc(data));
 		};
 	})(sck);
 	var onEndSocketFunc = (function(sk){
