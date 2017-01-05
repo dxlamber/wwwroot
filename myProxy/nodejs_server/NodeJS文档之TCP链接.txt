@@ -1,10 +1,23 @@
-概念：
- 有这么一个对象，它
-        是一个TCP socket的抽象对象。
+Socket的概念：
+ 是关于TCP通信的一个抽象模型，是一条通信链路在两端主机上的代理对象。所以，要实现一个TCP通信过程，要：
+        在两端各实现一个socket对象。
+        每个socket对象包含本端主机，端口，对端主机，端口。两个socket对象必须填写一致。比如：
+                A主机上有socket对象，使用A主机20端口到B主机45端口的配置。
+                B主机上有socket对象，使用B主机45端口到A主机20端口的配置。
+        通常一端的主机名，端口是公开的，并且是始终轮询并等待链接的。我们称为服务端。
+  创建这样一个对象：
+        1. 通过创建TCP服务器的方式创建
+                创建TCP服务器并不会创建socket对象。创建一个轮询监听端口的死循环。
+                当TCP服务器与某一个客户端建立TCP链接的时候才会创建socket对象，代表创建的TCP链路。
+                “当TCP服务器与某一个客户端建立TCP链接的时候”表示接收到客户端的三次握手，并成功握手。
+        2. 通过创建TCP客户端的方式创建
+                发送TCP三次握手协议的程序就是客户端。
+                握手成功后，才会创建socket对象，代表创建的TCP链路。
+这个socket对象，它
         是一个双工流（可读可写流）对象。双工流是有两条流通道，两个缓冲区。
- 创建这样一个对象：
-        new net.Socket([options])
- 拥有的事件接口：
+        可读流的read方法，可写流的write方法
+对象类型：net.Socket([options])
+拥有的事件接口：
         一些从流继承的事件：data, drain 等等。
         Socket本身特有的事件：
                 close: 当这个socket完全被关闭的时候触发。
@@ -13,9 +26,114 @@
                 end: 当接收到socket对端发过来一个FIN报文包的时候触发。
                 TCP的链接关闭过程，A端发一个FIN包，B端发一个回应包，切断A到B方向的流。B端发一个FIN包，A端发一个回应包，切断B到A方向的流。
 
-来做一个demo，
-一端准备要建立socket的配置信息，创建链接，得到返回的socket对象。
-
-另一端创建轮询程序，等待请求的到来。
+来做一个demo，服务器端创建轮询程序，等待请求的到来。
         1. 有请求到来，自动执行TCP建立链接的三次包应答。
-        2. 三次应答成功之后，TCP成功建立，创建socket对象，并触发socket对象的connect事件。
+        2. 三次应答成功之后，TCP成功建立，创建socket对象代表这个新创建的TCP链路。
+var srv = net.createServer();
+srv.on('connection', function(skt){
+        //connection is established.
+        //use "skt" to write or read data.
+})
+srv.listen(3030, "localhost");
+ 客户端直接向已知的服务器端口发TCP链接建立请求。
+        1. 向已知的服务器端口发起TCP三次握手
+        2. 三次握手成功后，TCP链路成功建立。创建socket对象代表这个新创建的TCP链路。
+var skt = net.connect(3030,"localhost");
+skt.on('connect',function(){
+        //TCP connection is established
+        //use "skt" to write or read data
+});
+
+
+
+关于流的读写，另外详细讲解，这里只要知道一个大概就可以了：
+写：
+stream.write(data)
+读：
+stream.on('data',function(buf){
+        //read buffer.
+});
+
+end在一般流中表示无数据可读，在socket中表示读到FIN包。
+stream.on('end', function(){
+        //read empty.
+});
+
+详细代码见simpleServe.js和simpleClient.js。
+测试用例一， 使用自己编写的客户端连接自己的服务器端：
+  运行server端程序监听。
+  服务器端输出日志：
+  TCP server is created!
+  TCP server is listening on 3030!
+  
+  运行client程序链接，发送内容，发送关闭请求。
+  服务器端日志：
+  TCP server is created!
+  TCP server is listening on 3030!
+  TCP connection is established successed!
+  Reveiveed data from peer:
+  Hi, World!
+  Write data to peer:
+  Hi, World!
+  Reveiveed FIN packet from peer.
+  Send FIN packet to peer.
+  Server closed.
+  客户端日志：
+  TCP connect request is send out to peer!
+  TCP connect is established success!
+  Send an string "Hi, World!\n" to peer.
+  Send an FIN packet to peer.
+  Received data from peer:
+  Hi, World!
+  Reveiveed FIN packet from peer ended:
+
+测试用例二， 使用浏览器连接自己的服务器端：
+  运行server端程序监听。
+  服务器端输出日志：
+  TCP server is created!
+  TCP server is listening on 3030!
+  
+  运行chrome浏览器，地址栏里面输入：http://localhost:3030/
+  服务器端日志：
+TCP server is created!
+
+TCP server is listening on 3030!
+
+TCP connection is established successed!
+
+Reveiveed data from peer: 
+
+GET / HTTP/1.1
+Host: localhost:3030
+Connection: keep-alive
+Cache-Control: max-age=0
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Accept-Encoding: gzip, deflate, sdch, br
+Accept-Language: zh-CN,zh;q=0.8,en;q=0.6
+Cookie: ASPSESSIONIDQWSASQTT=HBDNLAOALJAPKGOFOOHFOBKG; advtsecure=L8POK2LMM49NKK8N5PM1K7023MON1P0K5PPN2047L19OLK0K159NON35796086O5M7NO749OLL1PLMO608070558755KM922K271K4049PN13O61; advtnonsecure=644989M4OPN3K477K0873747M219O071OM75M3LN0696N2621KOM97672537033O2MK0P25K2N4K7NKP662654OP8K8003PP; advtsession=O58682PO6M3027327674066K86NK71P9LPLK85M2KM58962570PLK640PPM50713PPL04838K467P6330O1N01P20134KM02MPLL18O5M802LM66; ADV=yes; _hp2_id.321564218=%7B%22userId%22%3A%224143638357190278%22%2C%22pageviewId%22%3A%223537816413945121%22%2C%22sessionId%22%3A%224697186166601304%22%2C%22identity%22%3Anull%2C%22trackerVersion%22%3A%223.0%22%7D; NavStatus-DOLAWS=Expanded; INSTID=DOLAWS; USERID=346162
+
+
+Write data to peer: 
+
+GET / HTTP/1.1
+Host: localhost:3030
+Connection: keep-alive
+Cache-Control: max-age=0
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Accept-Encoding: gzip, deflate, sdch, br
+Accept-Language: zh-CN,zh;q=0.8,en;q=0.6
+Cookie: ASPSESSIONIDQWSASQTT=HBDNLAOALJAPKGOFOOHFOBKG; advtsecure=L8POK2LMM49NKK8N5PM1K7023MON1P0K5PPN2047L19OLK0K159NON35796086O5M7NO749OLL1PLMO608070558755KM922K271K4049PN13O61; advtnonsecure=644989M4OPN3K477K0873747M219O071OM75M3LN0696N2621KOM97672537033O2MK0P25K2N4K7NKP662654OP8K8003PP; advtsession=O58682PO6M3027327674066K86NK71P9LPLK85M2KM58962570PLK640PPM50713PPL04838K467P6330O1N01P20134KM02MPLL18O5M802LM66; ADV=yes; _hp2_id.321564218=%7B%22userId%22%3A%224143638357190278%22%2C%22pageviewId%22%3A%223537816413945121%22%2C%22sessionId%22%3A%224697186166601304%22%2C%22identity%22%3Anull%2C%22trackerVersion%22%3A%223.0%22%7D; NavStatus-DOLAWS=Expanded; INSTID=DOLAWS; USERID=346162
+
+
+Reveiveed FIN packet from peer.
+
+Send FIN packet to peer.
+
+Server closed.
+
+
+        
