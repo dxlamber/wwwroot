@@ -50,9 +50,9 @@ srv.on('request', function(req, resp){
 		else//return 404
 		{
 			resp.writeHead(404, {
-				'Content-Length': Buffer.byteLength("Hello, World!"),
+				'Content-Length': Buffer.byteLength("Hello, 404 World!"),
 				'Content-Type': 'text/html' });
-			resp.end('Hello, World!');
+			resp.end('Hello, 404 World!');
 		}
 	}
 });
