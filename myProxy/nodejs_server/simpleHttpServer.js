@@ -1,8 +1,11 @@
 var bDebug = false;
-var baseDir = "./html"
+var baseDir = "./html";
+var baseApiDir = "./html";
+
 var http = require('http');
 var Url = require('url');
 var fs = require('fs');
+var apiM = require('./api/apiModule.js');
 var srv,gBuf;
 
 
@@ -37,7 +40,7 @@ srv.on('request', function(req, resp){
 	}
 	else
 	{
-		var objUrl = Url.parse(req.url);
+		var objUrl = Url.parse(req.url, true);
 		console.log("Client requested url: " + req.url);
 		var relativePath = baseDir + (objUrl.pathname == "/" ? "/index.html" : objUrl.pathname);
 		console.log("Client requested file path: " + relativePath);
@@ -46,6 +49,23 @@ srv.on('request', function(req, resp){
 			var fss = fs.createReadStream(relativePath);
 			fss.on('end', function(){resp.end();});
 			fss.pipe(resp);
+		}
+		else if(objUrl.pathname.startsWith("/api/"))//web api interface
+		{
+			var funcName = objUrl.pathname.substring(5, objUrl.pathname.length);
+			var qObj = objUrl.query;
+			switch(funcName)
+			{
+				case "getSite":
+					resp.end(apiM["getSite"](qObj.name));
+					break;
+				default:
+					resp.writeHead(404, {
+						'Content-Length': Buffer.byteLength("Hello, 404 World!"),
+						'Content-Type': 'text/html' });
+					resp.end('Hello, 404 World!');
+					break;
+			}
 		}
 		else//return 404
 		{
