@@ -1,52 +1,22 @@
-var bDebugHeader = false;
 var baseDir = "./html";
-var baseApiDir = "./html";
 
 var http = require('http');
 var Url = require('url');
 var fs = require('fs');
 var apiM = require('./api/apiModule.js');
-var srv,gBuf;
+var srv;
 
 
 
 srv = http.createServer();
-console.log('HTTP server is created!\n');
 srv.on('request', function(req, resp){
 	console.log('HTTP server get a HTTP reqeust package from client:\n');
-	if(bDebugHeader)
-	{
-		console.log('HTTP server send back data to client test:\n');
-		var body = '<div>Method: ' + req.method + '</div>';
-		var bOdd = false;
-		body += req.rawHeaders.reduce(function(prev, curval){
-			if(bOdd)
-			{
-				bOdd = !bOdd;
-				return prev + curval + '</div>';
-			}
-			else
-			{
-				bOdd = !bOdd;
-				return prev + '<div>' + curval + ': ';
-			}
-		},"");
-		body += '<div>Body: We only debug the header area.</div>';
-		console.log("URL: "+ req.url + "\n" + body);
-		resp.writeHead(200, {
-		  'Content-Length': Buffer.byteLength(body),
-		  'Content-Type': 'text/html' });
-		resp.end(body);
-	}
-	else
-	{
+	
+	var followProc = function(relPath, paras, data, req, resp){
 		var objUrl = Url.parse(req.url, true);
-		console.log("Client requested url: " + req.url);
-		var relativePath = baseDir + (objUrl.pathname == "/" ? "/index.html" : objUrl.pathname);
-		console.log("Client requested file path: " + relativePath);
-		if(fs.existsSync(relativePath))//return content of the file
+		if(fs.existsSync(relPath))//return content of the file
 		{
-			var fss = fs.createReadStream(relativePath);
+			var fss = fs.createReadStream(relPath);
 			fss.on('end', function(){resp.end();});
 			fss.pipe(resp);
 		}
@@ -57,19 +27,14 @@ srv.on('request', function(req, resp){
 			switch(funcName)
 			{
 				case "getSiteJson":
-					var tUrl = "";
-					if(qObj.tUrl)
-						tUrl = qObj.tUrl;
-					//Read request data
-					var gReqData = '';
-					req.on('data', function(bf){
-						gReqData += bf;
-					});
-					req.on('end', function(){
-						var jsonData = JSON.parse(gReqData);
-						tUrl = jsonData.tUrl;
-						resp.end(apiM["getSiteJson"](tUrl));
-					});
+					var jsonData = JSON.parse(data);
+					tUrl = jsonData.tUrl;
+					resp.end(apiM["getSiteJson"](tUrl));
+					break;
+				case "getSiteHTML":
+					var jsonData = JSON.parse(data);
+					tUrl = jsonData.tUrl;
+					apiM["getSiteHTML"](tUrl, resp);
 					break;
 				default:
 					resp.writeHead(404, {
@@ -86,7 +51,32 @@ srv.on('request', function(req, resp){
 				'Content-Type': 'text/html' });
 			resp.end('Hello, 404 World!');
 		}
+	};
+
+	/* 
+	1. Get params in URL.
+	2. Get data posted.
+	3. follow process with the params and data.
+	 */
+	var relativePath = "";
+	var params = [];
+	var postData = "";
+	var objUrl = Url.parse(req.url, true);
+	relativePath = baseDir + (objUrl.pathname == "/" ? "/index.html" : objUrl.pathname);
+	params = objUrl.query;
+	if(req.method == "GET")
+		followProc(relativePath, params, postData, req, resp);
+	else //POST
+	{
+		postData = '';
+		req.on('data', function(bf){
+			postData += bf;
+		});
+		req.on('end', function(){
+			followProc(relativePath, params, postData, req, resp);
+		});
 	}
+
 });
 srv.listen(3030,"localhost");
 console.log('HTTP server is listening on 3030!\n');

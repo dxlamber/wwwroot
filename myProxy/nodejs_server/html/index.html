@@ -6,7 +6,20 @@
 <script>
 	function mainEntry()
 	{
-		debugger;
+		testAPIAllJson();
+		testAPIJsonGoHtmlCome();
+	};
+	function okFn(data, status)
+	{
+	debugger;
+	}
+	function failedFn(data, status)
+	{
+	debugger;
+	}
+	//Send Json, return Json
+	function testAPIAllJson()
+	{
 		var postObj = {
 			"tUrl": "http://www.baidu.com/"
 		};
@@ -22,14 +35,25 @@
 			success: okFn,
 			error: failedFn
 		});
-	};
-	function okFn(data, status)
-	{
-	debugger;
 	}
-	function failedFn(data, status)
+	//Send Json, return HTML
+	function testAPIJsonGoHtmlCome()
 	{
-	debugger;
+		var postObj = {
+			"tUrl": "http://www.baidu.com/"
+		};
+		$.ajax({
+			url:"http://localhost:3030/api/getSiteHTML",
+			type: "POST",
+			
+			contentType: "application/json",
+			data: JSON.stringify(postObj),
+			
+			dataType: "html",
+			
+			success: okFn,
+			error: failedFn
+		});
 	}
 	$(document).ready(mainEntry);
 </script>
