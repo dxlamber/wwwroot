@@ -1,0 +1,20 @@
+杂项：
+1. 命令行终端下打开vs code编辑器。
+	code .
+   code是vs code编辑器的命令行命令，点号表示当前目录，整个命令的作用是打开编辑器并默认打开当前目录
+2. 编辑器内置的终端控制台View->Integrated Terminal, 和普通的终端控制台完全一样。
+
+
+
+调试设置：
+1. 点击侧边栏的杀死虫子按钮，打开debug面板。
+2. 点击面板右上角的齿轮按钮，选择调试环境。不论设置那个环境，都会生成一个launch.json文件。
+这个json文件里面就是所有的调试配置信息。vs code编辑器会根据这个json文件来执行调试命令。
+3. 这个json文件放在当前目录下面的.vscode目录下面
+4. 里面各个条目的含义：
+	"type", 表示用调试环境，比如pathyn，ruby等等。我们是node。
+	"request", 表示用launch还是来attach来运行program。
+	"name", 每个配置项的名字。一般配置两个配置项：一个用来launch（launching a program in debug mode），一个用来attach ( attaching to an already running program )。
+	"program", 表示launch nodejs来运行的js代码文件。即主程序入口。
+	"cwd", 表示当前工作目录
+5. 一般用齿轮选node默认生成的就可以了。

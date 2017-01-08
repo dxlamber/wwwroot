@@ -6,12 +6,16 @@
 <script>
 	function mainEntry()
 	{
-		$({
-			url:"http://localhost:3030/api/getSite",
+		debugger;
+		var postObj = {
+			"tUrl": "http://www.baidu.com/"
+		};
+		$.ajax({
+			url:"http://localhost:3030/api/getSiteJson",
 			type: "POST",
 			
 			contentType: "application/json",
-			data: '{"tUrl":"http://www.baidu.com/"}',
+			data: JSON.stringify(postObj),
 			
 			dataType: "json",
 			

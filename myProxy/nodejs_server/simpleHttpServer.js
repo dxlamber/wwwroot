@@ -1,4 +1,4 @@
-var bDebug = false;
+var bDebugHeader = false;
 var baseDir = "./html";
 var baseApiDir = "./html";
 
@@ -14,7 +14,7 @@ srv = http.createServer();
 console.log('HTTP server is created!\n');
 srv.on('request', function(req, resp){
 	console.log('HTTP server get a HTTP reqeust package from client:\n');
-	if(bDebug)
+	if(bDebugHeader)
 	{
 		console.log('HTTP server send back data to client test:\n');
 		var body = '<div>Method: ' + req.method + '</div>';
@@ -56,8 +56,20 @@ srv.on('request', function(req, resp){
 			var qObj = objUrl.query;
 			switch(funcName)
 			{
-				case "getSite":
-					resp.end(apiM["getSite"](qObj.name));
+				case "getSiteJson":
+					var tUrl = "";
+					if(qObj.tUrl)
+						tUrl = qObj.tUrl;
+					//Read request data
+					var gReqData = '';
+					req.on('data', function(bf){
+						gReqData += bf;
+					});
+					req.on('end', function(){
+						var jsonData = JSON.parse(gReqData);
+						tUrl = jsonData.tUrl;
+						resp.end(apiM["getSiteJson"](tUrl));
+					});
 					break;
 				default:
 					resp.writeHead(404, {
