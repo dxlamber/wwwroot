@@ -5,7 +5,7 @@
 			"type":"node",
 			"request":"launch",
 			"name":"Launch Server Program",
-			"program": "${workspaceRoot}/simpleHttpServer.js",
+			"program": "${workspaceRoot}/simpleProxyServer.js",
 			"cwd": "${workspaceRoot}",
 			"console": "internalConsole",
 			"stopOnEntry":false
