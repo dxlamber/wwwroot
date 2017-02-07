@@ -8,15 +8,15 @@ exports.getSiteJson = function(siteName){
 	return JSON.stringify(retData);
 };
 exports.getSiteHTML = function(siteName, rsp){
-	var clt = http.request(
-		{
+	var opts = {
 			hostname: Url.parse(siteName).hostname,
 			port: 80,
 			path: '/',
 			method: 'GET'
-		}, 
-		function(siteRsp){
+		};
+	var clt = http.request(opts, function(siteRsp){
 			siteRsp.on('end',function(){rsp.end();});
 			siteRsp.pipe(rsp);
 	});
+	clt.end();
 };

@@ -2,7 +2,10 @@
 	<script src="./jquery.js"></script>
 </head>
 <div>
+	static text goes here
 </div>
+<div id="outputarea">api return data goes here !</div>
+<textarea id="outputareahtml" style="height:600px;width:1024px;">api return html goes here !</textarea>
 <script>
 	function mainEntry()
 	{
@@ -12,6 +15,12 @@
 	function okFn(data, status)
 	{
 	debugger;
+		$("#outputarea").html(data.text);
+	}
+	function okHtmlFn(data, status)
+	{
+	debugger;
+		$("#outputareahtml").text(data);
 	}
 	function failedFn(data, status)
 	{
@@ -51,7 +60,7 @@
 			
 			dataType: "html",
 			
-			success: okFn,
+			success: okHtmlFn,
 			error: failedFn
 		});
 	}
