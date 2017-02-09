@@ -20,18 +20,20 @@ srv.on('request', function(req, resp){
 			fss.on('end', function(){resp.end();});
 			fss.pipe(resp);
 		}
-		else if(objUrl.pathname.startsWith("/api/"))//web api interface
+		else if(/^\/api\//.test(objUrl.pathname))//web api interface
 		{
 			var funcName = objUrl.pathname.substring(5, objUrl.pathname.length);
 			var qObj = objUrl.query;
 			switch(funcName)
 			{
 				case "getSiteJson":
+					console.log('Receiver the "getSiteJson" api call\n');
 					var jsonData = JSON.parse(data);
 					tUrl = jsonData.tUrl;
 					resp.end(apiM["getSiteJson"](tUrl));
 					break;
 				case "getSiteHTML":
+					console.log('Receiver the "getSiteHTML" api call\n');
 					var jsonData = JSON.parse(data);
 					tUrl = jsonData.tUrl;
 					apiM["getSiteHTML"](tUrl, resp);
@@ -78,5 +80,5 @@ srv.on('request', function(req, resp){
 	}
 
 });
-srv.listen(3030,"localhost");
+srv.listen(3030);
 console.log('HTTP server is listening on 3030!\n');

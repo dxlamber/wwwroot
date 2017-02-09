@@ -30,10 +30,10 @@
 	function testAPIAllJson()
 	{
 		var postObj = {
-			"tUrl": "http://www.baidu.com/"
+			"tUrl": "http://www.google.com/"
 		};
 		$.ajax({
-			url:"http://localhost:3030/api/getSiteJson",
+			url:"http://172.28.17.74:3030/api/getSiteJson",
 			type: "POST",
 			
 			contentType: "application/json",
@@ -49,10 +49,10 @@
 	function testAPIJsonGoHtmlCome()
 	{
 		var postObj = {
-			"tUrl": "http://www.baidu.com/"
+			"tUrl": "http://www.google.com/"
 		};
 		$.ajax({
-			url:"http://localhost:3030/api/getSiteHTML",
+			url:"http://172.28.17.74:3030/api/getSiteHTML",
 			type: "POST",
 			
 			contentType: "application/json",
